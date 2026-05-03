@@ -54,9 +54,9 @@ export function getDb(session: Pick<Session, "mill_id">) {
      * const { data } = await db.from('suppliers').select('*').eq('is_active', true)
      */
     from(table: string): any {
-      assertScoped(table);
-      return (client.from(table as any) as any).eq("mill_id", mill_id);
-    },
+  assertScoped(table);
+  return client.from(table as any) as any;
+},
 
     /**
      * INSERT — mill_id injected automatically.

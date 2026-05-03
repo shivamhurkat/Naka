@@ -36,7 +36,7 @@ export async function listBuyers(
   const { activeOnly = true, search = "", page = 1, pageSize = 20 } = opts;
   const db = getDb(session);
 
-  let query = db.from("buyers").select("*", { count: "exact" });
+ let query = db.from("buyers").select("*", { count: "exact" }).eq("mill_id", session.mill_id);
 
   if (activeOnly) {
     query = query.eq("is_active", true);
@@ -67,7 +67,7 @@ export async function getBuyer(
   id: string
 ): Promise<Buyer> {
   const db = getDb(session);
-  const { data, error } = await db.from("buyers").select("*").eq("id", id).single();
+const { data, error } = await db.from("buyers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
   if (error || !data) throw new NotFoundError("Buyer not found");
   return data as Buyer;
 }

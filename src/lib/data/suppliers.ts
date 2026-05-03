@@ -35,7 +35,7 @@ export async function listSuppliers(
   const { activeOnly = true, search = "", page = 1, pageSize = 20 } = opts;
   const db = getDb(session);
 
-  let query = db.from("suppliers").select("*", { count: "exact" });
+  let query = db.from("suppliers").select("*", { count: "exact" }).eq("mill_id", session.mill_id);
 
   if (activeOnly) {
     query = query.eq("is_active", true);
@@ -66,7 +66,7 @@ export async function getSupplier(
   id: string
 ): Promise<Supplier> {
   const db = getDb(session);
-  const { data, error } = await db.from("suppliers").select("*").eq("id", id).single();
+ const { data, error } = await db.from("suppliers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
   if (error || !data) throw new NotFoundError("Supplier not found");
   return data as Supplier;
 }
