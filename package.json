@@ -14,10 +14,12 @@
     "@supabase/supabase-js": "^2.105.1",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.3",
+    "lucide-react": "^1.14.0",
     "next": "14.2.35",
     "next-intl": "^4.11.0",
     "react": "^18",
     "react-dom": "^18",
+    "sonner": "^2.0.7",
     "zod": "^4.4.2"
   },
   "devDependencies": {

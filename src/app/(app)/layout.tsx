@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import LogoutButton from "@/components/LogoutButton";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import BottomNav from "@/components/BottomNav";
+import { Toaster } from "sonner";
 
 export default async function AppLayout({
   children,
@@ -31,7 +33,10 @@ export default async function AppLayout({
         </div>
       </header>
 
-      <main>{children}</main>
+      <main className="pb-16">{children}</main>
+
+      <BottomNav />
+      <Toaster position="top-center" richColors closeButton />
     </div>
   );
 }

@@ -11,7 +11,24 @@
     "search": "Search",
     "add": "Add",
     "close": "Close",
-    "goHome": "Go back home"
+    "goHome": "Go back home",
+    "filter": "Filter",
+    "activeOnly": "Active only",
+    "showAll": "Show all",
+    "noResults": "No results found",
+    "deleting": "Deleting…",
+    "saving": "Saving…",
+    "retry": "Retry",
+    "inactive": "Inactive",
+    "restore": "Restore",
+    "confirm": "Confirm",
+    "optional": "optional",
+    "name": "Name",
+    "phone": "Phone",
+    "village": "Village / Town",
+    "city": "City",
+    "notes": "Notes",
+    "gst": "GST Number"
   },
   "auth": {
     "login": {
@@ -40,7 +57,11 @@
       "owner": "Owner",
       "manager": "Manager",
       "munim": "Munim"
-    }
+    },
+    "dashboard": "Dashboard",
+    "lots": "Lots",
+    "suppliers": "Suppliers",
+    "buyers": "Buyers"
   },
   "landing": {
     "tagline": "Mill gate logbook",
@@ -60,17 +81,60 @@
     "title": "For Mill Owners",
     "description": "Owner dashboard — coming soon."
   },
+  "suppliers": {
+    "title": "Suppliers",
+    "addNew": "New Supplier",
+    "editTitle": "Edit Supplier",
+    "newTitle": "Add New Supplier",
+    "namePlaceholder": "Rameshwar Traders",
+    "villagePlaceholder": "Wardha",
+    "phonePlaceholder": "9876543210",
+    "notesPlaceholder": "Any notes…",
+    "deleteConfirm": "Delete this supplier?",
+    "restoreConfirm": "Restore this supplier?",
+    "deleteSuccess": "Supplier deleted",
+    "restoreSuccess": "Supplier restored",
+    "saveSuccess": "Supplier saved",
+    "notFound": "Supplier not found",
+    "empty": "No suppliers found",
+    "emptyHint": "Tap + to add a new supplier"
+  },
+  "buyers": {
+    "title": "Buyers",
+    "addNew": "New Buyer",
+    "editTitle": "Edit Buyer",
+    "newTitle": "Add New Buyer",
+    "namePlaceholder": "Shri Ram Trading",
+    "cityPlaceholder": "Nagpur",
+    "phonePlaceholder": "9876543210",
+    "notesPlaceholder": "Any notes…",
+    "gstPlaceholder": "27ABCDE1234F1Z5",
+    "deleteConfirm": "Delete this buyer?",
+    "restoreConfirm": "Restore this buyer?",
+    "deleteSuccess": "Buyer deleted",
+    "restoreSuccess": "Buyer restored",
+    "saveSuccess": "Buyer saved",
+    "notFound": "Buyer not found",
+    "empty": "No buyers found",
+    "emptyHint": "Tap + to add a new buyer"
+  },
   "errors": {
     "notFound": "Page not found",
     "notFoundDesc": "This page does not exist or has been moved.",
     "goHome": "Go back home",
     "errorTitle": "Something went wrong",
     "errorDesc": "An unexpected error occurred. Please try again.",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "forbidden": "You do not have permission to do this.",
+    "serverError": "Server error. Please try again later."
   },
   "validation": {
     "required": "This field is required",
     "phoneFormat": "Enter a 10-digit phone number",
-    "pinFormat": "Enter a 4-digit PIN"
+    "pinFormat": "Enter a 4-digit PIN",
+    "nameTooShort": "Name must be at least 2 characters",
+    "nameTooLong": "Name must be 100 characters or fewer",
+    "gstFormat": "Enter a valid GST number",
+    "tooLong": "Too long"
   }
 }

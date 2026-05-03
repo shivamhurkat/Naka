@@ -11,7 +11,24 @@
     "search": "खोजें",
     "add": "जोड़ें",
     "close": "बंद करें",
-    "goHome": "होम पर जाएं"
+    "goHome": "होम पर जाएं",
+    "filter": "फ़िल्टर",
+    "activeOnly": "सक्रिय",
+    "showAll": "सभी दिखाएं",
+    "noResults": "कोई नतीजा नहीं",
+    "deleting": "हटाया जा रहा है…",
+    "saving": "सेव हो रहा है…",
+    "retry": "फिर कोशिश करें",
+    "inactive": "निष्क्रिय",
+    "restore": "वापस लाएं",
+    "confirm": "पक्का करें",
+    "optional": "वैकल्पिक",
+    "name": "नाम",
+    "phone": "मोबाइल",
+    "village": "गाँव / शहर",
+    "city": "शहर",
+    "notes": "नोट",
+    "gst": "GST नंबर"
   },
   "auth": {
     "login": {
@@ -40,7 +57,11 @@
       "owner": "मालिक",
       "manager": "मैनेजर",
       "munim": "मुनीम"
-    }
+    },
+    "dashboard": "डैशबोर्ड",
+    "lots": "लॉट",
+    "suppliers": "सप्लायर",
+    "buyers": "खरीदार"
   },
   "landing": {
     "tagline": "मिल गेट लॉगबुक",
@@ -60,17 +81,60 @@
     "title": "मिल मालिकों के लिए",
     "description": "मालिक डैशबोर्ड — जल्द आ रहा है।"
   },
+  "suppliers": {
+    "title": "सप्लायर",
+    "addNew": "नया सप्लायर",
+    "editTitle": "सप्लायर बदलें",
+    "newTitle": "नया सप्लायर जोड़ें",
+    "namePlaceholder": "रामेश्वर ट्रेडर्स",
+    "villagePlaceholder": "वर्धा",
+    "phonePlaceholder": "9876543210",
+    "notesPlaceholder": "कोई नोट…",
+    "deleteConfirm": "क्या आप इस सप्लायर को हटाना चाहते हैं?",
+    "restoreConfirm": "क्या आप इस सप्लायर को वापस लाना चाहते हैं?",
+    "deleteSuccess": "सप्लायर हटाया गया",
+    "restoreSuccess": "सप्लायर वापस लाया गया",
+    "saveSuccess": "सप्लायर सेव हुआ",
+    "notFound": "सप्लायर नहीं मिला",
+    "empty": "कोई सप्लायर नहीं मिला",
+    "emptyHint": "नया सप्लायर जोड़ने के लिए + दबाएं"
+  },
+  "buyers": {
+    "title": "खरीदार",
+    "addNew": "नया खरीदार",
+    "editTitle": "खरीदार बदलें",
+    "newTitle": "नया खरीदार जोड़ें",
+    "namePlaceholder": "श्री राम ट्रेडिंग",
+    "cityPlaceholder": "नागपुर",
+    "phonePlaceholder": "9876543210",
+    "notesPlaceholder": "कोई नोट…",
+    "gstPlaceholder": "27ABCDE1234F1Z5",
+    "deleteConfirm": "क्या आप इस खरीदार को हटाना चाहते हैं?",
+    "restoreConfirm": "क्या आप इस खरीदार को वापस लाना चाहते हैं?",
+    "deleteSuccess": "खरीदार हटाया गया",
+    "restoreSuccess": "खरीदार वापस लाया गया",
+    "saveSuccess": "खरीदार सेव हुआ",
+    "notFound": "खरीदार नहीं मिला",
+    "empty": "कोई खरीदार नहीं मिला",
+    "emptyHint": "नया खरीदार जोड़ने के लिए + दबाएं"
+  },
   "errors": {
     "notFound": "पेज नहीं मिला",
     "notFoundDesc": "यह पेज मौजूद नहीं है या हटाया गया है।",
     "goHome": "होम पर जाएं",
     "errorTitle": "कुछ गलत हो गया",
     "errorDesc": "अप्रत्याशित गड़बड़ी हुई। दोबारा कोशिश करें।",
-    "tryAgain": "दोबारा कोशिश करें"
+    "tryAgain": "दोबारा कोशिश करें",
+    "forbidden": "आपको यह काम करने की अनुमति नहीं है।",
+    "serverError": "सर्वर में गड़बड़ी। थोड़ी देर में कोशिश करें।"
   },
   "validation": {
     "required": "यह फ़ील्ड ज़रूरी है",
     "phoneFormat": "10 अंकों का मोबाइल नंबर डालें",
-    "pinFormat": "4 अंकों का पिन डालें"
+    "pinFormat": "4 अंकों का पिन डालें",
+    "nameTooShort": "नाम कम से कम 2 अक्षर का होना चाहिए",
+    "nameTooLong": "नाम 100 अक्षर से ज़्यादा नहीं हो सकता",
+    "gstFormat": "सही GST नंबर डालें",
+    "tooLong": "बहुत लंबा है"
   }
 }
