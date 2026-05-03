@@ -42,6 +42,7 @@ export type Database = {
           city: string | null;
           state: string | null;
           industry: IndustryType;
+          code: string;
           created_at: string;
           updated_at: string;
         };
@@ -54,6 +55,7 @@ export type Database = {
           city?: string | null;
           state?: string | null;
           industry: IndustryType;
+          code: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -66,6 +68,7 @@ export type Database = {
           city?: string | null;
           state?: string | null;
           industry?: IndustryType;
+          code?: string;
           updated_at?: string;
         };
         Relationships: [];

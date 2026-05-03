@@ -1,6 +1,6 @@
 -- =============================================================================
 -- Naka — seed.sql
--- Inserts demo data for development. Run AFTER 0001_init.sql.
+-- Inserts demo data for development. Run AFTER all migrations.
 -- The mills_seed_default_items trigger auto-creates items on mill insert.
 -- =============================================================================
 
@@ -10,7 +10,7 @@ DECLARE
 BEGIN
 
   -- ── Demo mill ──────────────────────────────────────────────────────────────
-  INSERT INTO mills (name, owner_name, phone, address, city, state, industry)
+  INSERT INTO mills (name, owner_name, phone, address, city, state, industry, code)
   VALUES (
     'Hinganghat Demo Mill',
     'Ramesh Agrawal',
@@ -18,7 +18,8 @@ BEGIN
     'Plot 12, MIDC Industrial Area',
     'Hinganghat',
     'Maharashtra',
-    'cotton'
+    'cotton',
+    'DEMO01'
   )
   RETURNING id INTO v_mill_id;
 
@@ -36,5 +37,5 @@ BEGIN
     (v_mill_id, 'Maharashtra Textiles Ltd', '9845678901', 'Nagpur',  '27AABCM1234A1Z5'),
     (v_mill_id, 'Vidarbha Cotton Co',       '9856789012', 'Wardha',  '27AABCV5678B1Z3');
 
-  RAISE NOTICE 'Seed complete. Mill ID: %', v_mill_id;
+  RAISE NOTICE 'Seed complete. Mill ID: %  Code: DEMO01', v_mill_id;
 END $$;
