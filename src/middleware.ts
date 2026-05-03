@@ -2,25 +2,28 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getSessionFromRequest } from "@/lib/auth/session";
 
-// Routes that don't require a session
-const PUBLIC_PREFIXES = [
-  "/",
-  "/login",
-  "/owners",
-  "/api/auth/",
+// Routes under (app) that require an active session.
+// Add new app routes here as the app grows.
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/lots",
+  "/dispatches",
+  "/suppliers",
+  "/buyers",
+  "/reports",
+  "/settings",
 ];
 
-function isPublic(pathname: string): boolean {
-  if (pathname === "/") return true;
-  return PUBLIC_PREFIXES.some(
-    (p) => p !== "/" && pathname.startsWith(p)
+function requiresAuth(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
   );
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (isPublic(pathname)) {
+  if (!requiresAuth(pathname)) {
     return NextResponse.next();
   }
 
@@ -37,7 +40,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on everything except Next.js internals and static files
     "/((?!_next/static|_next/image|favicon\\.ico).*)",
   ],
 };

@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // var(--font-devanagari) is set by next/font when locale is 'hi'.
+        // Falls back to system-ui for English (var is absent).
+        sans: ["var(--font-devanagari)", "system-ui", "sans-serif"],
+      },
       colors: {
         primary: {
           50:  "#f0fdf4",

@@ -2,15 +2,20 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import PageContainer from "@/components/PageContainer";
 import Button from "@/components/Button";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("auth");
+  const tLanding = useTranslations("landing");
+
   const [millCode, setMillCode] = useState("");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const canSubmit =
@@ -19,7 +24,7 @@ export default function LoginPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
-    setError(null);
+    setErrorKey(null);
     setLoading(true);
 
     try {
@@ -36,14 +41,15 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Kuch gadbad hui. Dobara try karein.");
+        // API returns error_key relative to 'auth' namespace
+        setErrorKey(data.error_key ?? "errors.serverError");
         return;
       }
 
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Network error. Internet check karein.");
+      setErrorKey("errors.networkError");
     } finally {
       setLoading(false);
     }
@@ -51,31 +57,33 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <div className="flex justify-end px-4 pt-4">
+        <LocaleSwitcher size="sm" />
+      </div>
+
       <main className="flex-1 flex flex-col justify-center">
-        <PageContainer className="py-8">
-          {/* Wordmark */}
+        <PageContainer className="py-6">
           <div className="mb-10 text-center">
             <h1 className="text-5xl font-extrabold tracking-tight text-primary-700">
               Naka
             </h1>
-            <p className="mt-1 text-neutral-500 text-sm">Mill gate logbook</p>
+            <p className="mt-1 text-neutral-500 text-sm">{tLanding("tagline")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-            {/* Mill Code */}
             <div>
               <label
                 htmlFor="mill-code"
                 className="block text-sm font-semibold text-neutral-700 mb-1.5"
               >
-                Mill Code
+                {t("login.millCode")}
               </label>
               <input
                 id="mill-code"
                 type="text"
                 value={millCode}
                 onChange={(e) => setMillCode(e.target.value.toUpperCase())}
-                placeholder="DEMO01"
+                placeholder={t("login.millCodePlaceholder")}
                 maxLength={10}
                 autoCapitalize="characters"
                 autoComplete="off"
@@ -85,13 +93,12 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Phone */}
             <div>
               <label
                 htmlFor="phone"
                 className="block text-sm font-semibold text-neutral-700 mb-1.5"
               >
-                Phone Number
+                {t("login.phone")}
               </label>
               <input
                 id="phone"
@@ -101,7 +108,7 @@ export default function LoginPage() {
                 onChange={(e) =>
                   setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
                 }
-                placeholder="9876543210"
+                placeholder={t("login.phonePlaceholder")}
                 maxLength={10}
                 autoComplete="tel"
                 required
@@ -109,13 +116,12 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* PIN */}
             <div>
               <label
                 htmlFor="pin"
                 className="block text-sm font-semibold text-neutral-700 mb-1.5"
               >
-                PIN
+                {t("login.pin")}
               </label>
               <input
                 id="pin"
@@ -125,7 +131,7 @@ export default function LoginPage() {
                 onChange={(e) =>
                   setPin(e.target.value.replace(/\D/g, "").slice(0, 4))
                 }
-                placeholder="••••"
+                placeholder={t("login.pinPlaceholder")}
                 maxLength={4}
                 autoComplete="current-password"
                 required
@@ -133,10 +139,9 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Error */}
-            {error && (
+            {errorKey && (
               <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3">
-                <p className="text-red-700 text-sm font-medium">{error}</p>
+                <p className="text-red-700 text-sm font-medium">{t(errorKey)}</p>
               </div>
             )}
 
@@ -147,16 +152,14 @@ export default function LoginPage() {
               disabled={!canSubmit || loading}
               className="mt-1 text-lg py-4"
             >
-              {loading ? "Please wait…" : "Login"}
+              {loading ? t("login.submitting") : t("login.submit")}
             </Button>
           </form>
         </PageContainer>
       </main>
 
       <footer className="py-4 text-center">
-        <p className="text-xs text-neutral-400">
-          Cotton · Oil · Dal mills
-        </p>
+        <p className="text-xs text-neutral-400">{tLanding("footer")}</p>
       </footer>
     </div>
   );
