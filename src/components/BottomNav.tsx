@@ -12,9 +12,15 @@ const NAV_ITEMS = [
   { href: "/buyers", icon: ShoppingCart, labelKey: "buyers" },
 ] as const;
 
+function isFormRoute(pathname: string): boolean {
+  return /\/(new|edit)(\/|$)/.test(pathname) || /\/[^/]+\/edit(\/|$)/.test(pathname);
+}
+
 export default function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
+
+  if (isFormRoute(pathname)) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-neutral-200 safe-area-bottom">

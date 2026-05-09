@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_Devanagari } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 // Loaded for Hindi locale — covers Devanagari + Latin glyphs.
@@ -34,6 +35,7 @@ export default async function RootLayout({
       className={locale === "hi" ? notoDevanagari.variable : ""}
     >
       <body className="antialiased">
+        <NextTopLoader color="#15803d" height={3} showSpinner={false} />
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
