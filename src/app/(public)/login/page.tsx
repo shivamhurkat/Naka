@@ -6,20 +6,35 @@ import { useTranslations } from "next-intl";
 import PageContainer from "@/components/PageContainer";
 import Button from "@/components/Button";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import { normalizeIndianPhone } from "@/lib/phone";
 
 export default function LoginPage() {
   const router = useRouter();
   const t = useTranslations("auth");
   const tLanding = useTranslations("landing");
+  const tv = useTranslations("validation");
 
   const [millCode, setMillCode] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [pin, setPin] = useState("");
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit =
-    millCode.length >= 4 && phone.length === 10 && pin.length === 4;
+  const phoneNorm = normalizeIndianPhone(phone.trim());
+  const canSubmit = millCode.length >= 4 && phoneNorm.ok && pin.length === 4;
+
+  function handlePhoneBlur() {
+    const trimmed = phone.trim();
+    if (!trimmed) { setPhoneError(""); return; }
+    const result = normalizeIndianPhone(trimmed);
+    if (result.ok) {
+      setPhone(result.national);
+      setPhoneError("");
+    } else {
+      setPhoneError(tv("phone.invalid"));
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -27,13 +42,16 @@ export default function LoginPage() {
     setErrorKey(null);
     setLoading(true);
 
+    const norm = normalizeIndianPhone(phone.trim());
+    if (!norm.ok) { setLoading(false); return; }
+
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mill_code: millCode.trim().toUpperCase(),
-          phone: phone.trim(),
+          phone: norm.national,
           pin,
         }),
       });
@@ -41,7 +59,6 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // API returns error_key relative to 'auth' namespace
         setErrorKey(data.error_key ?? "errors.serverError");
         return;
       }
@@ -103,17 +120,25 @@ export default function LoginPage() {
               <input
                 id="phone"
                 type="tel"
-                inputMode="numeric"
+                inputMode="tel"
                 value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
+                onChange={(e) => {
+                  setPhone(e.target.value.slice(0, 15));
+                  setPhoneError("");
+                }}
+                onBlur={handlePhoneBlur}
                 placeholder={t("login.phonePlaceholder")}
-                maxLength={10}
+                maxLength={15}
                 autoComplete="tel"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-neutral-300 text-base focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent min-h-[52px]"
+                className={[
+                  "w-full px-4 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 focus:border-transparent min-h-[52px]",
+                  phoneError
+                    ? "border-red-400 focus:ring-red-300"
+                    : "border-neutral-300 focus:ring-primary-600",
+                ].join(" ")}
               />
+              {phoneError && <p className="mt-1 text-xs text-red-600">{phoneError}</p>}
             </div>
 
             <div>
@@ -141,7 +166,7 @@ export default function LoginPage() {
 
             {errorKey && (
               <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3">
-                <p className="text-red-700 text-sm font-medium">{t(errorKey)}</p>
+                <p className="text-red-700 text-sm font-medium">{t(errorKey as Parameters<typeof t>[0])}</p>
               </div>
             )}
 

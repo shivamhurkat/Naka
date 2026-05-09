@@ -52,3 +52,29 @@ in a `naka_locale` cookie and synced to `users.locale` in the database.
 
 Noto Sans Devanagari (Google Fonts, subsets: devanagari + latin) is loaded via
 `next/font` and applied when locale is `hi`. English falls back to `system-ui`.
+
+## Phone number handling
+
+All phone inputs use `src/lib/phone.ts` → `normalizeIndianPhone(input)`.
+
+Accepts any of: `9876543210`, `09876543210`, `+919876543210`, `+91 98765-43210`.
+Always stores and validates the 10-digit national form. Use this helper in every
+future form that accepts an Indian mobile number — do not write a new regex.
+
+```ts
+import { normalizeIndianPhone } from "@/lib/phone";
+const result = normalizeIndianPhone(rawInput);
+if (result.ok) { /* result.national = "9876543210" */ }
+```
+
+## Photos
+
+Photos attach to entities (inbound_lot, outbound_dispatch, claim) via the
+`photos` table. Each entity has named slots (truck, weighbridge, moisture_meter,
+sample, dispatch_slip). Slots are defined in `src/lib/storage/photos.ts`.
+
+Use `<PhotoGrid entityType="..." entityId="...">` to render the 2×2 capture UI.
+For future entities (dispatches in step 9), pass a custom `slots` prop.
+
+Upload flow: compress client-side (browser-image-compression) → signed PUT URL
+(`/api/photos/upload-url`) → XHR with progress → register (`/api/photos/register`).

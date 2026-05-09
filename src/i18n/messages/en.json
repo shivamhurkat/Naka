@@ -166,7 +166,14 @@
     "errorDesc": "An unexpected error occurred. Please try again.",
     "tryAgain": "Try again",
     "forbidden": "You do not have permission to do this.",
-    "serverError": "Server error. Please try again later."
+    "serverError": "Server error. Please try again later.",
+    "duplicate": {
+      "name": "This name already exists",
+      "phone": "This phone number already exists",
+      "lot_number": "This lot number already exists",
+      "gst": "This GST number already exists",
+      "generic": "This entry already exists"
+    }
   },
   "validation": {
     "required": "This field is required",
@@ -175,6 +182,31 @@
     "nameTooShort": "Name must be at least 2 characters",
     "nameTooLong": "Name must be 100 characters or fewer",
     "gstFormat": "Enter a valid GST number",
-    "tooLong": "Too long"
+    "tooLong": "Too long",
+    "phone": {
+      "invalid": "Invalid phone number",
+      "tooShort": "Phone number is too short",
+      "tooLong": "Phone number is too long",
+      "invalidPrefix": "Phone number must start with 6, 7, 8, or 9"
+    }
+  },
+  "photos": {
+    "title": "Photos",
+    "slotTruck": "Truck",
+    "slotWeighbridge": "Weighbridge slip",
+    "slotMoistureMeter": "Moisture meter",
+    "slotSample": "Sample",
+    "slotDispatchSlip": "Dispatch slip",
+    "addPhoto": "Add photo",
+    "replacePhoto": "Replace photo",
+    "deletePhoto": "Delete photo",
+    "deleteConfirm": "Delete this photo?",
+    "uploading": "Uploading…",
+    "uploadFailed": "Upload failed",
+    "retry": "Retry",
+    "photoSaved": "Photo saved",
+    "photoDeleted": "Photo deleted",
+    "count": "{count} / {total} photos",
+    "fullScreenClose": "Close"
   }
 }

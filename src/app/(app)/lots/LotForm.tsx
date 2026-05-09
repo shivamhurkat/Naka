@@ -28,6 +28,7 @@ function toLocalDatetimeValue(iso?: string): string {
 export default function LotForm({ initial }: LotFormProps) {
   const t = useTranslations("lots");
   const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
 
   const [suppliers, setSuppliers] = useState<SelectOption[]>([]);
@@ -113,6 +114,16 @@ export default function LotForm({ initial }: LotFormProps) {
       const json = await res.json();
 
       if (!res.ok) {
+        if (res.status === 409 && json.error === "duplicate") {
+          const msgKey = (json.messageKey as string)?.replace(/^errors\./, "") ?? "duplicate.generic";
+          const msg = te(msgKey as Parameters<typeof te>[0]);
+          if (json.field) {
+            setErrors({ [json.field]: msg });
+          } else {
+            toast.error(msg);
+          }
+          return;
+        }
         if (json.fields) {
           setErrors(
             Object.fromEntries(
@@ -129,7 +140,6 @@ export default function LotForm({ initial }: LotFormProps) {
       toast.success(`${t("saved")}${lotNumber ? ` — ${lotNumber}` : ""}`);
 
       if (addAnother) {
-        // Clear form but preserve supplier selection
         setItemId("");
         setVehicleNumber("");
         setGrossWeight("");
@@ -141,7 +151,8 @@ export default function LotForm({ initial }: LotFormProps) {
         setNotes("");
         setErrors({});
       } else {
-        router.push(initial ? `/lots/${initial.id}` : "/lots");
+        // Redirect to lot detail so photos can be attached immediately
+        router.push(initial ? `/lots/${initial.id}` : `/lots/${json.id}`);
         router.refresh();
       }
     } catch {

@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError, DuplicateError, pgConstraintField } from "@/lib/errors";
 import type { Session } from "@/lib/auth/session";
 
 export interface Supplier {
@@ -66,7 +66,7 @@ export async function getSupplier(
   id: string
 ): Promise<Supplier> {
   const db = getDb(session);
- const { data, error } = await db.from("suppliers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
+  const { data, error } = await db.from("suppliers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
   if (error || !data) throw new NotFoundError("Supplier not found");
   return data as Supplier;
 }
@@ -80,7 +80,12 @@ export async function createSupplier(
     .insert("suppliers", { ...payload, is_active: true })
     .select()
     .single();
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), payload.name ?? "");
+    }
+    throw error;
+  }
   return data as Supplier;
 }
 
@@ -95,7 +100,13 @@ export async function updateSupplier(
     .eq("id", id)
     .select()
     .single();
-  if (error || !data) throw new NotFoundError("Supplier not found");
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), payload.name ?? "");
+    }
+    throw error;
+  }
+  if (!data) throw new NotFoundError("Supplier not found");
   return data as Supplier;
 }
 

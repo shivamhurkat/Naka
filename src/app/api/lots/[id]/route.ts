@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/session";
 import { getInboundLot, updateInboundLot, softDeleteInboundLot } from "@/lib/data/inbound-lots";
 import { InboundLotSchema } from "@/lib/validation/inbound-lot";
-import { NotFoundError, ForbiddenError } from "@/lib/errors";
+import { NotFoundError, ForbiddenError, DuplicateError } from "@/lib/errors";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(
@@ -64,6 +64,14 @@ export async function PATCH(
   } catch (err) {
     if (err instanceof NotFoundError) return NextResponse.json({ error_key: "lots.notFound" }, { status: 404 });
     if (err instanceof ForbiddenError) return NextResponse.json({ error_key: "lots.munimEditExpired" }, { status: 403 });
+    if (err instanceof DuplicateError) {
+      return NextResponse.json({
+        error: "duplicate",
+        field: err.field,
+        value: err.value,
+        messageKey: `errors.duplicate.${err.field}`,
+      }, { status: 409 });
+    }
     return NextResponse.json({ error_key: "errors.serverError" }, { status: 500 });
   }
 }

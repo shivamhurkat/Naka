@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/session";
 import { listInboundLots, createInboundLot } from "@/lib/data/inbound-lots";
 import { InboundLotSchema } from "@/lib/validation/inbound-lot";
+import { DuplicateError } from "@/lib/errors";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(request: Request) {
@@ -48,7 +49,6 @@ export async function POST(request: Request) {
   try {
     const lot = await createInboundLot(session, parsed.data);
 
-    // Audit log
     const admin = createAdminClient();
     await admin.from("audit_log").insert({
       mill_id: session.mill_id,
@@ -62,7 +62,15 @@ export async function POST(request: Request) {
     revalidatePath("/lots");
     revalidatePath("/dashboard");
     return NextResponse.json(lot, { status: 201 });
-  } catch {
+  } catch (err) {
+    if (err instanceof DuplicateError) {
+      return NextResponse.json({
+        error: "duplicate",
+        field: err.field,
+        value: err.value,
+        messageKey: `errors.duplicate.${err.field}`,
+      }, { status: 409 });
+    }
     return NextResponse.json({ error_key: "errors.serverError" }, { status: 500 });
   }
 }

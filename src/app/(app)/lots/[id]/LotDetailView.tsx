@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Camera } from "lucide-react";
 import type { InboundLotWithRefs } from "@/lib/data/inbound-lots";
 import type { Session } from "@/lib/auth/session";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import PhotoGrid from "@/components/photos/PhotoGrid";
 import LotForm from "../LotForm";
 
 interface LotDetailViewProps {
@@ -52,6 +52,7 @@ export default function LotDetailView({ lot, session }: LotDetailViewProps) {
       isWithin24h(lot.created_at));
 
   const canDelete = session.role === "owner";
+  const canDeletePhoto = session.role === "owner" || session.role === "manager";
 
   async function handleDelete() {
     setDeleting(true);
@@ -114,19 +115,13 @@ export default function LotDetailView({ lot, session }: LotDetailViewProps) {
         </div>
       </Card>
 
-      {/* Photos placeholder */}
+      {/* Photos */}
       <Card>
-        <div className="flex flex-col items-center gap-2 py-4">
-          <Camera size={28} className="text-neutral-300" />
-          <p className="text-sm text-neutral-400">{t("photosComingSoon")}</p>
-          <button
-            type="button"
-            disabled
-            className="h-9 px-4 rounded-xl bg-neutral-100 text-neutral-400 text-sm font-medium cursor-not-allowed"
-          >
-            + Photo
-          </button>
-        </div>
+        <PhotoGrid
+          entityType="inbound_lot"
+          entityId={lot.id}
+          canDelete={canDeletePhoto}
+        />
       </Card>
 
       {/* Actions */}

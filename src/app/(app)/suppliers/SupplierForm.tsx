@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { Supplier } from "@/lib/data/suppliers";
+import { normalizeIndianPhone } from "@/lib/phone";
 import TextField from "@/components/TextField";
 import TextareaField from "@/components/TextareaField";
 import Button from "@/components/Button";
@@ -17,6 +18,8 @@ interface SupplierFormProps {
 export default function SupplierForm({ initial }: SupplierFormProps) {
   const t = useTranslations("suppliers");
   const tc = useTranslations("common");
+  const te = useTranslations("errors");
+  const tv = useTranslations("validation");
   const router = useRouter();
 
   const [name, setName] = useState(initial?.name ?? "");
@@ -25,6 +28,18 @@ export default function SupplierForm({ initial }: SupplierFormProps) {
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+
+  function handlePhoneBlur() {
+    const trimmed = phone.trim();
+    if (!trimmed) { setErrors((p) => ({ ...p, phone: "" })); return; }
+    const result = normalizeIndianPhone(trimmed);
+    if (result.ok) {
+      setPhone(result.national);
+      setErrors((p) => ({ ...p, phone: "" }));
+    } else {
+      setErrors((p) => ({ ...p, phone: tv("phone.invalid") }));
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,6 +65,16 @@ export default function SupplierForm({ initial }: SupplierFormProps) {
       const json = await res.json();
 
       if (!res.ok) {
+        if (res.status === 409 && json.error === "duplicate") {
+          const msgKey = (json.messageKey as string)?.replace(/^errors\./, "") ?? "duplicate.generic";
+          const msg = te(msgKey as Parameters<typeof te>[0]);
+          if (json.field) {
+            setErrors({ [json.field]: msg });
+          } else {
+            toast.error(msg);
+          }
+          return;
+        }
         if (json.fields) {
           setErrors(
             Object.fromEntries(
@@ -86,9 +111,11 @@ export default function SupplierForm({ initial }: SupplierFormProps) {
       <TextField
         label={tc("phone")}
         value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+        onChange={(e) => { setPhone(e.target.value.slice(0, 15)); setErrors((p) => ({ ...p, phone: "" })); }}
+        onBlur={handlePhoneBlur}
         placeholder={t("phonePlaceholder")}
-        inputMode="numeric"
+        inputMode="tel"
+        maxLength={15}
         hint={`(${tc("optional")})`}
         error={errors.phone}
       />

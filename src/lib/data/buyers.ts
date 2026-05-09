@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError, DuplicateError, pgConstraintField } from "@/lib/errors";
 import type { Session } from "@/lib/auth/session";
 
 export interface Buyer {
@@ -36,7 +36,7 @@ export async function listBuyers(
   const { activeOnly = true, search = "", page = 1, pageSize = 20 } = opts;
   const db = getDb(session);
 
- let query = db.from("buyers").select("*", { count: "exact" }).eq("mill_id", session.mill_id);
+  let query = db.from("buyers").select("*", { count: "exact" }).eq("mill_id", session.mill_id);
 
   if (activeOnly) {
     query = query.eq("is_active", true);
@@ -67,7 +67,7 @@ export async function getBuyer(
   id: string
 ): Promise<Buyer> {
   const db = getDb(session);
-const { data, error } = await db.from("buyers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
+  const { data, error } = await db.from("buyers").select("*").eq("mill_id", session.mill_id).eq("id", id).single();
   if (error || !data) throw new NotFoundError("Buyer not found");
   return data as Buyer;
 }
@@ -87,7 +87,12 @@ export async function createBuyer(
     .insert("buyers", { ...payload, is_active: true })
     .select()
     .single();
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), payload.name ?? "");
+    }
+    throw error;
+  }
   return data as Buyer;
 }
 
@@ -108,7 +113,13 @@ export async function updateBuyer(
     .eq("id", id)
     .select()
     .single();
-  if (error || !data) throw new NotFoundError("Buyer not found");
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), payload.name ?? "");
+    }
+    throw error;
+  }
+  if (!data) throw new NotFoundError("Buyer not found");
   return data as Buyer;
 }
 

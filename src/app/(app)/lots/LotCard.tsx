@@ -20,7 +20,15 @@ function formatInr(val: number): string {
   return val.toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
+function photoBadgeClass(count: number): string {
+  if (count >= 4) return "text-green-500";
+  if (count >= 1) return "text-amber-400";
+  return "text-neutral-300";
+}
+
 export default function LotCard({ lot }: LotCardProps) {
+  const count = lot.photo_count ?? 0;
+
   return (
     <Link
       href={`/lots/${lot.id}`}
@@ -40,7 +48,12 @@ export default function LotCard({ lot }: LotCardProps) {
             {lot.net_weight_qtl.toLocaleString("en-IN", { maximumFractionDigits: 2 })} qtl
           </p>
           <p className="text-base font-bold text-primary-700">₹{formatInr(lot.payable_amount)}</p>
-          <Camera size={14} className="ml-auto mt-1 text-neutral-300" />
+          <div className="flex items-center justify-end gap-1 mt-1">
+            <Camera size={14} className={photoBadgeClass(count)} />
+            {count > 0 && (
+              <span className={`text-xs font-medium ${photoBadgeClass(count)}`}>{count}/4</span>
+            )}
+          </div>
         </div>
       </div>
     </Link>

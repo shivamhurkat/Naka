@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { listBuyers, createBuyer } from "@/lib/data/buyers";
 import { BuyerSchema } from "@/lib/validation/buyer";
+import { DuplicateError } from "@/lib/errors";
 
 export async function GET(request: Request) {
   const session = await getSession();
@@ -44,7 +45,15 @@ export async function POST(request: Request) {
   try {
     const buyer = await createBuyer(session, parsed.data);
     return NextResponse.json(buyer, { status: 201 });
-  } catch {
+  } catch (err) {
+    if (err instanceof DuplicateError) {
+      return NextResponse.json({
+        error: "duplicate",
+        field: err.field,
+        value: err.value,
+        messageKey: `errors.duplicate.${err.field}`,
+      }, { status: 409 });
+    }
     return NextResponse.json({ error_key: "errors.serverError" }, { status: 500 });
   }
 }

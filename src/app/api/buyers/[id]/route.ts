@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { getBuyer, updateBuyer, softDeleteBuyer } from "@/lib/data/buyers";
 import { BuyerSchema } from "@/lib/validation/buyer";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError, DuplicateError } from "@/lib/errors";
 
 export async function GET(
   _request: Request,
@@ -51,6 +51,14 @@ export async function PATCH(
   } catch (err) {
     if (err instanceof NotFoundError) {
       return NextResponse.json({ error_key: "buyers.notFound" }, { status: 404 });
+    }
+    if (err instanceof DuplicateError) {
+      return NextResponse.json({
+        error: "duplicate",
+        field: err.field,
+        value: err.value,
+        messageKey: `errors.duplicate.${err.field}`,
+      }, { status: 409 });
     }
     return NextResponse.json({ error_key: "errors.serverError" }, { status: 500 });
   }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getDb } from "@/lib/db";
-import { NotFoundError, ForbiddenError } from "@/lib/errors";
+import { NotFoundError, ForbiddenError, DuplicateError, pgConstraintField } from "@/lib/errors";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Session } from "@/lib/auth/session";
 import type { InboundLotInput } from "@/lib/validation/inbound-lot";
 
@@ -40,6 +41,7 @@ export interface InboundLotRow {
 export interface InboundLotWithRefs extends InboundLotRow {
   supplier_name: string;
   item_name: string;
+  photo_count: number;
 }
 
 export interface ListLotsOptions {
@@ -107,7 +109,28 @@ export async function listInboundLots(
     ...r,
     supplier_name: r.suppliers?.name ?? "",
     item_name: r.items?.name ?? "",
+    photo_count: 0,
   })) as InboundLotWithRefs[];
+
+  // Batch-fetch active photo counts to avoid N+1
+  if (rows.length > 0) {
+    const lotIds = rows.map((r) => r.id);
+    const admin = createAdminClient();
+    const { data: photoRows } = await admin
+      .from("photos")
+      .select("entity_id")
+      .eq("entity_type", "inbound_lot")
+      .in("entity_id", lotIds)
+      .is("deleted_at", null);
+
+    const counts: Record<string, number> = {};
+    (photoRows ?? []).forEach((p: any) => {
+      counts[p.entity_id] = (counts[p.entity_id] ?? 0) + 1;
+    });
+    rows.forEach((r) => {
+      r.photo_count = counts[r.id] ?? 0;
+    });
+  }
 
   return { data: rows, total: count ?? 0, page, pageSize };
 }
@@ -133,6 +156,7 @@ export async function getInboundLot(
     ...(data as any),
     supplier_name: (data as any).suppliers?.name ?? "",
     item_name: (data as any).items?.name ?? "",
+    photo_count: 0,
   } as InboundLotWithRefs;
 }
 
@@ -149,7 +173,12 @@ export async function createInboundLot(
     })
     .select()
     .single();
-  if (error) throw error;
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), "");
+    }
+    throw error;
+  }
   return data as InboundLotRow;
 }
 
@@ -160,7 +189,6 @@ export async function updateInboundLot(
 ): Promise<InboundLotRow> {
   const db = getDb(session);
 
-  // Fetch existing to check ownership/time
   const { data: existing, error: fetchErr } = await db
     .from("inbound_lots")
     .select("created_by, created_at")
@@ -183,7 +211,13 @@ export async function updateInboundLot(
     .select()
     .single();
 
-  if (error || !data) throw new NotFoundError("Lot not found");
+  if (error) {
+    if (error.code === "23505") {
+      throw new DuplicateError(pgConstraintField(error.message), "");
+    }
+    throw error;
+  }
+  if (!data) throw new NotFoundError("Lot not found");
   return data as InboundLotRow;
 }
 
